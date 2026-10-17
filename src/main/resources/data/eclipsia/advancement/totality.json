@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "eclipsia:corona_lamp"
+    },
+    "title": {
+      "translate": "advancements.eclipsia.totality.title"
+    },
+    "description": {
+      "translate": "advancements.eclipsia.totality.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "witnessed": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "eclipsia:root"
+}

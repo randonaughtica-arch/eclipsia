@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "eclipsia:umbral_block"
+  ],
+  "result": {
+    "id": "eclipsia:umbral_shard",
+    "count": 9
+  }
+}

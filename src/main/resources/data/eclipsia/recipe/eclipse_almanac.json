@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "minecraft:clock"
+  ],
+  "result": {
+    "id": "eclipsia:eclipse_almanac",
+    "count": 1
+  }
+}

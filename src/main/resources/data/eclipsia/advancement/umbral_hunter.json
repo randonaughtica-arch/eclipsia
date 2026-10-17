@@ -1,0 +1,46 @@
+{
+  "display": {
+    "icon": {
+      "id": "eclipsia:umbral_shard"
+    },
+    "title": {
+      "translate": "advancements.eclipsia.umbral_hunter.title"
+    },
+    "description": {
+      "translate": "advancements.eclipsia.umbral_hunter.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "umbral": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "eclipsia:umbral_shard"
+          }
+        ]
+      }
+    },
+    "sanguine": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "eclipsia:sanguine_shard"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "eclipsia:root",
+  "requirements": [
+    [
+      "umbral",
+      "sanguine"
+    ]
+  ]
+}

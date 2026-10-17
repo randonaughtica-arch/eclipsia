@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "eclipsia:umbral_shard"
+    },
+    "title": {
+      "translate": "advancements.eclipsia.sun_glare.title"
+    },
+    "description": {
+      "translate": "advancements.eclipsia.sun_glare.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "witnessed": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "eclipsia:root"
+}

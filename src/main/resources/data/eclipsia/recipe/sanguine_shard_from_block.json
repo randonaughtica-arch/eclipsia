@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "eclipsia:sanguine_block"
+  ],
+  "result": {
+    "id": "eclipsia:sanguine_shard",
+    "count": 9
+  }
+}

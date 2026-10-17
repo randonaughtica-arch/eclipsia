@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "eclipsia",
+  "version": "${version}",
+  "name": "Eclipsia",
+  "description": "Solar eclipses darken the midday sky and blood-red lunar eclipses empower monsters. Watch safely with Eclipse Glasses, track them with the Eclipse Almanac, and hunt eclipse-touched mobs for Umbral and Sanguine shards.",
+  "authors": ["randonaughtica-arch"],
+  "contact": {
+    "sources": "https://github.com/randonaughtica-arch/eclipsia"
+  },
+  "license": "MIT",
+  "icon": "assets/eclipsia/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.eclipsia.Eclipsia"]
+  },
+  "mixins": [
+    {
+      "config": "eclipsia.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

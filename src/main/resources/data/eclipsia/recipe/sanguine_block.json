@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": "eclipsia:sanguine_shard"
+  },
+  "result": {
+    "id": "eclipsia:sanguine_block",
+    "count": 1
+  }
+}

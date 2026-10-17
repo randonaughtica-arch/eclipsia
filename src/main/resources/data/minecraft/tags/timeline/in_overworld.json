@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "eclipsia:solar_eclipse",
+    "eclipsia:lunar_eclipse"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " U ",
+    "UGU",
+    " S "
+  ],
+  "key": {
+    "U": "eclipsia:umbral_shard",
+    "G": "minecraft:glowstone",
+    "S": "eclipsia:sanguine_shard"
+  },
+  "result": {
+    "id": "eclipsia:corona_lamp",
+    "count": 1
+  }
+}

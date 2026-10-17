@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "eclipsia:umbral_block",
+    "eclipsia:sanguine_block",
+    "eclipsia:corona_lamp"
+  ]
+}

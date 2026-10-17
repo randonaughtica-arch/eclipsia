@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "eclipsia:eclipse_glasses"
+    },
+    "title": {
+      "translate": "advancements.eclipsia.safe_viewing.title"
+    },
+    "description": {
+      "translate": "advancements.eclipsia.safe_viewing.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "witnessed": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "eclipsia:root"
+}

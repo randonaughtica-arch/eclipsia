@@ -1,0 +1,38 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Check generated files are up to date
+        run: |
+          pip install pillow
+          python3 tools/generate.py
+          git diff --exit-code -- '*.json' '*.java'
+      - name: Build
+        run: ./gradlew build --no-daemon
+      - uses: actions/upload-artifact@v6
+        with:
+          name: eclipsia
+          path: build/libs/
+      - name: Server smoke test
+        run: |
+          mkdir -p run && echo "eula=true" > run/eula.txt
+          ./gradlew runServer --no-daemon --args=nogui > server.log 2>&1 &
+          for i in $(seq 1 120); do
+            grep -q -E 'Done \([0-9.]+s\)!' server.log && break
+            grep -q -E 'BUILD FAILED|Crash report|Exception in server tick loop' server.log && break
+            sleep 5
+          done
+          pkill -f 'net.fabricmc' || true
+          echo "--- plus_geodes log lines ---"
+          grep -i -E 'eclipsia' server.log | grep -v -i 'Loading' || true
+          grep -q -E 'Done \([0-9.]+s\)!' server.log || { tail -200 server.log; exit 1; }
+          if grep -E '(ERROR|WARN).*' server.log | grep -i eclipsia; then exit 1; fi

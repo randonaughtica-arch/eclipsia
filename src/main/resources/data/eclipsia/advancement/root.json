@@ -1,0 +1,68 @@
+{
+  "display": {
+    "icon": {
+      "id": "eclipsia:eclipse_almanac"
+    },
+    "title": {
+      "translate": "advancements.eclipsia.root.title"
+    },
+    "description": {
+      "translate": "advancements.eclipsia.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:gui/advancements/backgrounds/end"
+  },
+  "criteria": {
+    "glasses": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "eclipsia:eclipse_glasses"
+          }
+        ]
+      }
+    },
+    "almanac": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "eclipsia:eclipse_almanac"
+          }
+        ]
+      }
+    },
+    "umbral": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "eclipsia:umbral_shard"
+          }
+        ]
+      }
+    },
+    "sanguine": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "eclipsia:sanguine_shard"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "glasses",
+      "almanac",
+      "umbral",
+      "sanguine"
+    ]
+  ]
+}
