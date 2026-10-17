@@ -32,7 +32,7 @@ jobs:
             sleep 5
           done
           pkill -f 'net.fabricmc' || true
-          echo "--- plus_geodes log lines ---"
+          echo "--- eclipsia log lines ---"
           grep -i -E 'eclipsia' server.log | grep -v -i 'Loading' || true
           grep -q -E 'Done \([0-9.]+s\)!' server.log || { tail -200 server.log; exit 1; }
           if grep -E '(ERROR|WARN).*' server.log | grep -i eclipsia; then exit 1; fi
