@@ -12,59 +12,26 @@ jobs:
         run: |
           set +e
           mkdir p && cd p
-          T=https://raw.githubusercontent.com/FabricMC/fabric-example-mod/HEAD
-          for f in src/main/resources/modid.mixins.json src/client/resources/modid.client.mixins.json src/main/java/com/example/mixin/ExampleMixin.java src/client/java/com/example/mixin/client/ExampleClientMixin.java; do echo "=== TEMPLATE $f"; curl -s $T/$f; echo; done
-          FAPI=0.161.0+26.2
-          curl -s https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$FAPI/fabric-api-$FAPI.pom > pom.xml
-          get() { v=$(grep -A1 "<artifactId>$1</artifactId>" pom.xml | grep -o '<version>[^<]*' | sed 's/<version>//'); curl -s https://maven.fabricmc.net/net/fabricmc/fabric-api/$1/$v/$1-$v.jar -o $1.jar; mkdir -p x; (cd x && unzip -qo ../$1.jar); }
-          for m in fabric-lifecycle-events-v1 fabric-networking-api-v1 fabric-command-api-v2 fabric-entity-events-v1 fabric-rendering-v1 fabric-api-base; do get $m; done
-          echo "=== RENDERING CLASSES"; (cd x && find net/fabricmc/fabric/api/client/rendering -name '*.class' | grep -v '\$' )
-          jp() { javap -cp x:c "$@" 2>&1 | grep -v '^Compiled'; }
           curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json -o manifest.json
           url=$(python3 -c "import json;m=json.load(open('manifest.json'));print([v['url'] for v in m['versions'] if v['id']=='26.2'][0])")
           curl -s $url -o v.json
           curl -s $(python3 -c "import json;print(json.load(open('v.json'))['downloads']['client']['url'])") -o client.jar
           mkdir c && (cd c && unzip -q ../client.jar)
-          for c in net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents\$EndWorldTick net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents\$Load net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents\$AfterDeath net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking\$PlayPayloadHandler net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents\$Join net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents; do echo "=== $c"; jp $c; done
+          echo "=== ATTR NAMES"; strings -n 6 c/net/minecraft/world/attribute/EnvironmentAttributes.class | grep -E '^(visual|gameplay|audio)/' | tr '\n' ' '; echo
+          echo "=== MODIFIERS"; ls c/net/minecraft/world/attribute/modifier/; strings c/net/minecraft/world/attribute/modifier/AttributeModifier.class | grep -E '^[a-z_]+$' | tr '\n' ' '; echo
+          echo "=== TIMELINE TAGS"; ls c/data/minecraft/tags/timeline/; for f in c/data/minecraft/tags/timeline/*.json; do echo $f; cat $f; done
+          echo "=== MOON"; cat c/data/minecraft/timeline/moon.json
+          echo "=== EARLY"; cat c/data/minecraft/timeline/early_game.json | head -c 2500
+          echo "=== DAY rest"; python3 -c "import json;d=json.load(open('c/data/minecraft/timeline/day.json'));print(list(d['tracks'].keys()));[print(k,json.dumps(d['tracks'][k])) for k in d['tracks'] if k.startswith('minecraft:visual')]"
+          echo "=== WORLD CLOCK"; ls c/data/minecraft/world_clock; cat c/data/minecraft/world_clock/*.json
           curl -sL https://repo1.maven.org/maven2/org/vineflower/vineflower/1.11.1/vineflower-1.11.1.jar -o vf.jar
-          dc() { java -jar vf.jar c/$1.class d/ >/dev/null 2>&1; }
           mkdir d
-          for k in net/minecraft/world/level/Level net/minecraft/client/multiplayer/ClientLevel net/minecraft/server/level/ServerLevel net/minecraft/client/renderer/SkyRenderer net/minecraft/world/level/saveddata/SavedDataType net/minecraft/world/level/storage/DimensionDataStorage; do dc $k; done
-          ls d
-          echo "=== LEVEL sky"; grep -n -i -E "skyDarken|darken|isBrightOutside|isDarkOutside|getDayTime|getOverworldClockTime|clock|getSunAngle|getTimeOfDay|getMoonPhase|public .*Sky|updateSkyBrightness" d/Level.java | head -60
-          echo "=== CLIENTLEVEL"; grep -n -i -E "sky|dark|star|sun|moon|cloud|public .*\(" d/ClientLevel.java | head -80
-          echo "=== SERVERLEVEL"; grep -n -E "public .*(DataStorage|getDayTime|setDayTime|players\(|getDataStorage|broadcast|isDay|isNight|getGameTime|sendParticles|getMoonPhase)" d/ServerLevel.java | head -30
-          echo "=== SKYRENDERER"; head -c 12000 d/SkyRenderer.java
-          echo "=== SAVEDDATATYPE"; cat d/SavedDataType.java | head -60
-          echo "=== DATASTORAGE"; grep -n "public" d/DimensionDataStorage.java | head -20
-          javap -cp c net.minecraft.world.level.saveddata.SavedData
-          ls c/net/minecraft/world/attribute/ | head -60
-          dc net/minecraft/world/attribute/EnvironmentAttributes; grep -n "public static final" d/EnvironmentAttributes.java | head -80
-          echo "=== OVERWORLD DIM"; cat c/data/minecraft/dimension_type/overworld.json | head -c 4000
-          ls c/data/minecraft/ | tr '\n' ' '; echo; ls c/data/minecraft/timeline 2>/dev/null; head -c 3000 c/data/minecraft/timeline/day.json 2>/dev/null
-          echo "=== MOBEFFECTS"; javap -cp c net.minecraft.world.effect.MobEffects | grep -E "BLINDNESS|STRENGTH|SPEED|FIRE_RES|NIGHT_VISION|DARKNESS|GLOWING"
-          javap -cp c net.minecraft.world.effect.MobEffectInstance | grep "MobEffectInstance("
-          javap -cp c net.minecraft.world.entity.LivingEntity | grep -E "addEffect|hasEffect|getItemBySlot|getRandom\(\)"
-          javap -cp c net.minecraft.world.entity.Entity | grep -E " getXRot| level\(\)| blockPosition| getEyePosition| getType\(\)| spawnAtLocation| getEyeY| position\(\)| getX\(\)"
-          javap -cp c net.minecraft.world.level.Level | grep -E "canSeeSky|isDay|isNight|getBrightness"
-          javap -cp c net.minecraft.server.level.ServerPlayer | grep -E "sendSystemMessage|connection|displayClientMessage|serverLevel|level\(\)"
-          javap -cp c net.minecraft.world.entity.player.Player | grep -E "displayClientMessage|sendSystemMessage|getInventory"
-          javap -cp c net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket | grep "ClientboundSetTitleTextPacket("
-          javap -cp c net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket | grep "ClientboundSetTitlesAnimationPacket("
-          javap -cp c net.minecraft.network.protocol.common.custom.CustomPacketPayload
-          javap -cp c 'net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type'
-          javap -cp c net.minecraft.network.codec.StreamCodec | grep static | head -20
-          javap -cp c net.minecraft.network.codec.ByteBufCodecs | grep -E "BOOL|VAR_INT|STRING_UTF8|INT;|FLOAT" | head
-          javap -cp c net.minecraft.commands.Commands | grep -E "static .*(literal|argument|hasPermission|LEVEL)"
-          javap -cp c net.minecraft.commands.CommandSourceStack | grep -E "sendSuccess|sendFailure|getLevel|permissions|hasPermission"
-          javap -cp c net.minecraft.world.entity.monster.Monster | head -5
-          javap -cp c net.minecraft.world.entity.EquipmentSlot | grep static
-          javap -cp c net.minecraft.world.item.Item | grep -E "use\(|appendHoverText|InteractionResult"
-          javap -cp c net.minecraft.world.InteractionResult | grep static
-          javap -cp c net.minecraft.world.entity.Entity | grep -E "spawnAtLocation"
-          ls c/net/minecraft/world/level/block | grep -i -E "glass|lamp|tinted"
-          javap -cp c net.minecraft.world.level.block.TintedGlassBlock | grep TintedGlassBlock
-          javap -cp c net.minecraft.world.level.block.TransparentBlock | grep TransparentBlock
-          javap -cp c net.minecraft.world.level.block.RedstoneLampBlock | grep -E "LIT|RedstoneLampBlock"
-          grep -n -A8 "TINTED_GLASS = " $(dc net/minecraft/world/level/block/Blocks; echo d/Blocks.java) | head -12
-          grep -n -A6 "SEA_LANTERN = \|GLOWSTONE = " d/Blocks.java | head -16
+          for k in $(cd c && find net/minecraft/world/timeline -name '*.class' | grep -v '\$' | sed 's/.class$//'); do java -jar vf.jar c/$k.class d/ >/dev/null 2>&1; done
+          ls d; for f in d/Timeline.java d/Track.java d/Keyframe*.java d/AttributeTrack.java; do echo "=== $f"; head -c 5000 $f; done
+          java -jar vf.jar c/net/minecraft/client/renderer/SkyRenderer.class d2/ >/dev/null 2>&1
+          echo "=== SKY ATTR USE"; grep -n -E "EnvironmentAttributes\.[A-Z_]+" -o d2/SkyRenderer.java | sort -u
+          ls c/net/minecraft/client/renderer/state/level/ ; java -jar vf.jar c/net/minecraft/client/renderer/state/level/SkyRenderState.class d3/ >/dev/null 2>&1; cat d3/*.java | head -60
+          grep -rl "SkyRenderState" c/net/minecraft/client/renderer/*.class | head
+          java -jar vf.jar c/net/minecraft/client/renderer/LevelRenderer.class d4/ >/dev/null 2>&1; grep -n -B3 -A30 "void extractSky\|SkyRenderState skyState\|extractRenderState(.*Sky" d4/LevelRenderer.java | head -80
+          java -jar vf.jar c/net/minecraft/client/renderer/SkyRenderer.class d2/ >/dev/null 2>&1; grep -n -A40 "public void extractRenderState" d2/SkyRenderer.java | head -70
+          grep -n -A40 "public void renderSunMoonAndStars\|void renderSun\|void renderMoon" d2/SkyRenderer.java | head -120
