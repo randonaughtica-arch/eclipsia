@@ -145,9 +145,9 @@ public final class EclipseEvents {
             return;
         }
         Item shard = null;
-        if (entity.getTags().contains(SOLAR_TAG)) {
+        if (entity.removeTag(SOLAR_TAG)) {
             shard = ModContent.UMBRAL_SHARD;
-        } else if (entity.getTags().contains(LUNAR_TAG)) {
+        } else if (entity.removeTag(LUNAR_TAG)) {
             shard = ModContent.SANGUINE_SHARD;
         }
         if (shard != null && entity.getRandom().nextFloat() < 0.6F) {
